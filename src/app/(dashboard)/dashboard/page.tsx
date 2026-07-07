@@ -2,10 +2,10 @@ import Link from "next/link";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 
 const cards = [
+  { href: "/dashboard/chat", title: "Chat Workspace", text: "Habla con agentes, compara providers y guarda historial local." },
   { href: "/dashboard/api-vault", title: "API Vault", text: "Guarda keys cifradas y administralas por provider." },
   { href: "/dashboard/agent-builder", title: "Agent Builder", text: "Crea agentes con rol, prompt, modelo y skills." },
-  { href: "/dashboard/task-runner", title: "Task Runner", text: "Ejecuta single, parallel, debate o router." },
-  { href: "/dashboard/compare", title: "Compare View", text: "Compara outputs y fusiona la mejor respuesta." }
+  { href: "/dashboard/task-runner", title: "Task Runner", text: "Ejecuta single, parallel, debate o router." }
 ];
 
 export default function DashboardPage() {
@@ -24,7 +24,7 @@ export default function DashboardPage() {
         <div className="glass rounded-2xl p-6">
           <p className="text-xs font-medium uppercase text-mint">Flujo recomendado</p>
           <div className="mt-5 grid gap-3">
-            {["Conecta keys en API Vault", "Activa skills relevantes", "Crea un agente", "Ejecuta y compara resultados"].map((step, index) => (
+            {["Configura keys del servidor o API Vault", "Abre Chat Workspace", "Elige agente y modo", "Ejecuta y revisa historial"].map((step, index) => (
               <div key={step} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/6 p-4">
                 <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/8 text-sm font-medium text-mint">{index + 1}</span>
                 <span className="font-medium text-[#efe4d4]">{step}</span>

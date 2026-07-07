@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/Button";
 
 const nav = [
   { href: "/dashboard", label: "Overview", icon: "01" },
-  { href: "/dashboard/api-vault", label: "API Vault", icon: "02" },
-  { href: "/dashboard/agent-builder", label: "Agent Builder", icon: "03" },
-  { href: "/dashboard/skill-store", label: "Skill Store", icon: "04" },
-  { href: "/dashboard/task-runner", label: "Task Runner", icon: "05" },
-  { href: "/dashboard/compare", label: "Compare View", icon: "06" },
-  { href: "/dashboard/history", label: "Task History", icon: "07" },
-  { href: "/dashboard/settings", label: "Settings", icon: "08" }
+  { href: "/dashboard/chat", label: "Chat Workspace", icon: "02" },
+  { href: "/dashboard/api-vault", label: "API Vault", icon: "03" },
+  { href: "/dashboard/agent-builder", label: "Agent Builder", icon: "04" },
+  { href: "/dashboard/skill-store", label: "Skill Store", icon: "05" },
+  { href: "/dashboard/task-runner", label: "Task Runner", icon: "06" },
+  { href: "/dashboard/compare", label: "Compare View", icon: "07" },
+  { href: "/dashboard/history", label: "Task History", icon: "08" },
+  { href: "/dashboard/settings", label: "Settings", icon: "09" }
 ];
 
 export function DashboardShell({ children, email }: { children: React.ReactNode; email?: string }) {
