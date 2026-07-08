@@ -118,7 +118,6 @@ export function AgentBuilderClient() {
             <select className="field mt-2" value={form.favoriteProvider} onChange={(event) => updateProvider(event.target.value as Provider)}>
               <option value="openai">OpenAI</option>
               <option value="gemini">Gemini</option>
-              <option value="claude">Claude</option>
             </select>
           </label>
           <label className="block text-sm text-slate-300">

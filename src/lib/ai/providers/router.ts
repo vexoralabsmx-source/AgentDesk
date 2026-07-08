@@ -1,6 +1,5 @@
 import "server-only";
 
-import { runClaude } from "@/lib/ai/claudeAdapter";
 import { runGemini } from "@/lib/ai/geminiAdapter";
 import { runOpenAI } from "@/lib/ai/openaiAdapter";
 import type { Provider, ProviderRequest, ProviderResult } from "@/lib/ai/types";
@@ -20,6 +19,5 @@ export async function callProvider(
   const fullRequest = { ...request, apiKey };
 
   if (provider === "openai") return runOpenAI(fullRequest);
-  if (provider === "gemini") return runGemini(fullRequest);
-  return runClaude(fullRequest);
+  return runGemini(fullRequest);
 }

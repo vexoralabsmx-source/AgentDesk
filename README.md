@@ -1,6 +1,6 @@
 # AgentDesk
 
-AgentDesk es una plataforma web SaaS con Next.js, TypeScript, Tailwind CSS y Supabase para trabajar con agentes de IA, comparar proveedores y ejecutar tareas con OpenAI, Claude y Gemini desde un dashboard seguro.
+AgentDesk es una plataforma web SaaS con Next.js, TypeScript, Tailwind CSS y Supabase para trabajar con agentes de IA, comparar proveedores y ejecutar tareas con OpenAI y Gemini desde un dashboard seguro.
 
 ## Configuracion local
 
@@ -27,9 +27,10 @@ npm run dev
 - `SUPABASE_SERVICE_ROLE_KEY`: solo para tareas administrativas futuras; no se usa en frontend.
 - `ENCRYPTION_SECRET`: secreto largo para cifrar API keys. Usa al menos 32 caracteres.
 - `DEFAULT_DAILY_TASK_LIMIT`: limite diario basico por usuario.
-- `OPENAI_API_KEY`: key privada de OpenAI para `/api/chat`.
-- `ANTHROPIC_API_KEY`: key privada de Anthropic Claude para `/api/chat`.
-- `GEMINI_API_KEY`: key privada de Google Gemini para `/api/chat`.
+- `OPENAI_API_KEY`: fallback privado de OpenAI.
+- `GEMINI_API_KEY`: fallback privado de Google Gemini.
+- `PRO_OPENAI_API_KEY`: key privada de OpenAI para usuarios Pro.
+- `PRO_GEMINI_API_KEY`: key privada de Gemini para usuarios Pro.
 
 Ejemplo:
 
@@ -40,8 +41,9 @@ SUPABASE_SERVICE_ROLE_KEY=ey...
 ENCRYPTION_SECRET=agentdesk_clave_larga_privada_de_32_chars_minimo
 DEFAULT_DAILY_TASK_LIMIT=25
 OPENAI_API_KEY=tu_openai_api_key
-ANTHROPIC_API_KEY=tu_anthropic_api_key
 GEMINI_API_KEY=tu_gemini_api_key
+PRO_OPENAI_API_KEY=tu_openai_key_para_pro
+PRO_GEMINI_API_KEY=tu_gemini_key_para_pro
 ```
 
 Nunca subas `.env` o `.env.local` al repositorio. Ya estan ignorados en `.gitignore`.
@@ -50,11 +52,18 @@ Nunca subas `.env` o `.env.local` al repositorio. Ya estan ignorados en `.gitign
 
 La ruta `/api/chat` ejecuta llamadas a modelos desde backend usando:
 
-- OpenAI: `gpt-4o-mini`
-- Claude: `claude-3-5-haiku-latest`
-- Gemini: `gemini-1.5-flash`
+- OpenAI: `gpt-4o-mini`, `gpt-4o`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `o4-mini`, `o3-mini`
+- Gemini: `gemini-1.5-flash`, `gemini-1.5-pro`, `gemini-2.0-flash`, `gemini-2.0-flash-lite`, `gemini-2.5-flash`, `gemini-2.5-pro`
 
-Tambien existe el flujo original de API Vault, donde cada usuario puede guardar sus propias keys cifradas para el Task Runner avanzado.
+En plan Free, el usuario usa sus propias keys cifradas desde API Vault. En plan Pro, la app usa las keys privadas del servidor (`PRO_OPENAI_API_KEY` y `PRO_GEMINI_API_KEY`) sin exponerlas al navegador.
+
+## Planes y admin
+
+- Free: funciona con las API keys propias del usuario en API Vault.
+- Pro: activa keys predeterminadas del servidor y mayor limite diario.
+- Compra Pro: escribir a `vexoralabsmx@gmail.com`.
+- Panel admin: `/dashboard/admin`, visible para `vexoralabsmx@gmail.com`.
+- Las llaves Pro se crean desde el panel admin y solo sirven una vez.
 
 ## Agentes incluidos
 
@@ -67,11 +76,14 @@ Los agentes base viven en `src/config/agents.ts`:
 - Hype Writer: copywriting y marketing.
 - Flow Builder: automatizaciones.
 - Discord Operator: servidores Discord.
+- Ops Commander: estrategia operativa.
+- Growth Analyst: crecimiento y conversion.
+- Data Scout: datos e insights.
 
 ## Modos de trabajo
 
 - Individual: usa un provider y un agente.
-- Comparar: manda el mismo prompt a OpenAI, Claude y Gemini.
+- Comparar: manda el mismo prompt a OpenAI y Gemini.
 - Equipo: varios agentes responden y Atlas Director consolida.
 - Debate: una IA propone, otra critica y otra mejora.
 
@@ -105,22 +117,6 @@ Respuesta:
 }
 ```
 
-## Deploy
-
-### Vercel
-
-1. Conecta el repositorio.
-2. Agrega las variables de entorno.
-3. Ejecuta `supabase/schema.sql` en Supabase.
-4. Deploy con build command `npm run build`.
-
-### Netlify
-
-1. Conecta el repositorio.
-2. Usa build command `npm run build`.
-3. Publish directory: `.next`.
-4. Agrega el runtime/plugin de Next si Netlify lo solicita.
-
 ## Seguridad
 
 - Las API keys nunca viajan al navegador despues de guardarse.
@@ -128,7 +124,8 @@ Respuesta:
 - Las keys se cifran con AES-256-GCM antes de guardarse.
 - Las rutas API validan sesion y ownership con Supabase RLS.
 - Los modos parallel y debate piden confirmacion en UI antes de ejecutar.
-- `/api/chat` usa solo keys del servidor y valida sesion, provider, agente, modo y longitud del mensaje.
+- `/api/chat` usa keys del plan: Free toma API Vault; Pro toma keys privadas del servidor.
+- Valida sesion, provider, agente, modo y longitud del mensaje.
 - Hay rate limit basico en memoria para evitar abuso accidental.
 
 ## Proximos pasos recomendados

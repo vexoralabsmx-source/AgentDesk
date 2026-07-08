@@ -1,9 +1,9 @@
 import { orchestrateTask } from "@/lib/ai/orchestrator";
 import { providers, type Provider, type TaskMode } from "@/lib/ai/types";
 import { json, readJson, requireUser } from "@/lib/api/http";
+import { getPlanApiKeys } from "@/lib/billing/planKeys";
 import { getSkillsByIds } from "@/lib/skills/catalog";
 import { assertUserCanRunTask } from "@/lib/tasks/limits";
-import { getDecryptedKeys } from "@/lib/vault/service";
 
 type RunTaskBody = {
   mode: TaskMode;
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
   let apiKeys: Partial<Record<Provider, string>>;
   try {
-    apiKeys = await getDecryptedKeys(supabase, user.id, body.mode === "router" ? undefined : selectedProviders);
+    apiKeys = (await getPlanApiKeys(supabase, user.id, body.mode === "router" ? undefined : selectedProviders)).apiKeys;
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : "No se pudieron leer las API keys" }, { status: 500 });
   }

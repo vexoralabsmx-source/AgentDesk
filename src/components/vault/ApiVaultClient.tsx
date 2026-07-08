@@ -12,8 +12,7 @@ type SavedKey = {
 
 const providerLabels: Record<Provider, string> = {
   openai: "OpenAI",
-  gemini: "Gemini",
-  claude: "Claude"
+  gemini: "Gemini"
 };
 
 export function ApiVaultClient() {
@@ -77,7 +76,6 @@ export function ApiVaultClient() {
             <select className="field mt-2" value={provider} onChange={(event) => setProvider(event.target.value as Provider)}>
               <option value="openai">OpenAI</option>
               <option value="gemini">Gemini</option>
-              <option value="claude">Claude</option>
             </select>
           </label>
           <label className="block text-sm text-slate-300">
@@ -102,7 +100,7 @@ export function ApiVaultClient() {
       <section className="glass rounded-2xl p-6">
         <h2 className="text-xl font-black">Keys conectadas</h2>
         <div className="mt-5 grid gap-3">
-          {(["openai", "gemini", "claude"] as Provider[]).map((item) => {
+          {(["openai", "gemini"] as Provider[]).map((item) => {
             const saved = keys.find((key) => key.provider === item);
             return (
               <div key={item} className="flex flex-col justify-between gap-3 rounded-xl border border-white/10 bg-white/6 p-4 sm:flex-row sm:items-center">

@@ -17,7 +17,7 @@ type Result = {
   latencyMs: number;
 };
 
-const providerList: Provider[] = ["openai", "gemini", "claude"];
+const providerList: Provider[] = ["openai", "gemini"];
 
 export function TaskRunnerClient() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -115,7 +115,6 @@ export function TaskRunnerClient() {
               <select className="field mt-2" value={provider} onChange={(event) => setProvider(event.target.value as Provider)}>
                 <option value="openai">OpenAI</option>
                 <option value="gemini">Gemini</option>
-                <option value="claude">Claude</option>
               </select>
             </label>
           ) : mode !== "router" ? (

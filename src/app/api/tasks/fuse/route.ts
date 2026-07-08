@@ -1,9 +1,8 @@
 import { runOpenAI } from "@/lib/ai/openaiAdapter";
 import { runGemini } from "@/lib/ai/geminiAdapter";
-import { runClaude } from "@/lib/ai/claudeAdapter";
 import { defaultModels, providers, type Provider } from "@/lib/ai/types";
 import { json, readJson, requireUser } from "@/lib/api/http";
-import { getDecryptedKeys } from "@/lib/vault/service";
+import { getPlanApiKeys } from "@/lib/billing/planKeys";
 
 type FuseBody = {
   taskId: string;
@@ -19,8 +18,7 @@ async function runFusion(provider: Provider, apiKey: string, source: string) {
   };
 
   if (provider === "openai") return runOpenAI(request);
-  if (provider === "gemini") return runGemini(request);
-  return runClaude(request);
+  return runGemini(request);
 }
 
 export async function POST(request: Request) {
@@ -49,7 +47,7 @@ export async function POST(request: Request) {
   if (error) return json({ error: error.message }, { status: 500 });
   if (!outputs?.length) return json({ error: "No hay respuestas validas para fusionar" }, { status: 400 });
 
-  const apiKeys = await getDecryptedKeys(supabase, user.id);
+  const { apiKeys } = await getPlanApiKeys(supabase, user.id);
   const provider = body.provider && providers.includes(body.provider)
     ? body.provider
     : providers.find((item) => apiKeys[item]);

@@ -36,7 +36,7 @@ export default function DashboardPage() {
           <p className="text-xs font-medium uppercase text-solar">Uso</p>
           <h2 className="mt-4 text-4xl text-[#fff8eb]">25 tareas/dia</h2>
           <p className="mt-3 text-sm leading-6 text-[#b9ad9c]">
-            Limite basico por usuario configurable con `DEFAULT_DAILY_TASK_LIMIT`.
+            Free usa tus propias keys. Pro activa keys listas para usar.
           </p>
         </div>
       </section>

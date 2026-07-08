@@ -1,13 +1,13 @@
 import { systemAgents } from "@/config/agents";
 import { providers, type Provider } from "@/lib/ai/types";
-import { getEnvApiKeys } from "@/lib/ai/providers/env";
 import { json, readJson, requireUser } from "@/lib/api/http";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { getPlanApiKeys } from "@/lib/billing/planKeys";
 import { runChat, type ChatMode } from "@/lib/chat/orchestrator";
 
 type ChatBody = {
   message: string;
-  provider: Provider | "anthropic";
+  provider: Provider;
   model?: string;
   agentId: string;
   mode: ChatMode;
@@ -17,12 +17,8 @@ type ChatBody = {
 const modes: ChatMode[] = ["individual", "compare", "team", "debate"];
 const maxMessageLength = 8000;
 
-function normalizeProvider(provider: ChatBody["provider"]): Provider {
-  return provider === "anthropic" ? "claude" : provider;
-}
-
 export async function POST(request: Request) {
-  const { user, response } = await requireUser();
+  const { supabase, user, response } = await requireUser();
   if (response || !user) return response;
 
   const limit = checkRateLimit(user.id, 30, 60_000);
@@ -41,7 +37,7 @@ export async function POST(request: Request) {
   }
 
   const message = body.message?.trim();
-  const provider = normalizeProvider(body.provider);
+  const provider = body.provider;
   const validAgentIds = new Set(systemAgents.map((agent) => agent.id));
 
   if (!message) {
@@ -53,7 +49,7 @@ export async function POST(request: Request) {
   }
 
   if (!providers.includes(provider)) {
-    return json({ error: "Provider invalido. Elige OpenAI, Claude o Gemini." }, { status: 400 });
+    return json({ error: "Provider invalido. Elige OpenAI o Gemini." }, { status: 400 });
   }
 
   if (!modes.includes(body.mode)) {
@@ -66,6 +62,20 @@ export async function POST(request: Request) {
 
   const selectedAgents = (body.selectedAgents ?? []).filter((agentId) => validAgentIds.has(agentId));
 
+  const requiredProviders = body.mode === "individual" ? [provider] : providers;
+  const { plan, apiKeys } = await getPlanApiKeys(supabase, user.id, requiredProviders);
+  if (!Object.values(apiKeys).some(Boolean)) {
+    return json(
+      {
+        error:
+          plan === "pro"
+            ? "Tu plan Pro esta activo, pero faltan las API keys Pro en el servidor."
+            : "En Free necesitas guardar tus propias keys en API Vault antes de usar el chatbot."
+      },
+      { status: 400 }
+    );
+  }
+
   try {
     const result = await runChat({
       message,
@@ -74,7 +84,7 @@ export async function POST(request: Request) {
       agentId: body.agentId,
       mode: body.mode,
       selectedAgents,
-      apiKeys: getEnvApiKeys()
+      apiKeys
     });
 
     const failed = result.results.every((item) => item.error);

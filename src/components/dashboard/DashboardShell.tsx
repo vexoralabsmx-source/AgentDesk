@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/Button";
+import { isAdminEmail } from "@/lib/admin/config";
 
 const nav = [
   { href: "/dashboard", label: "Overview", icon: "01" },
@@ -20,6 +21,7 @@ const nav = [
 export function DashboardShell({ children, email }: { children: React.ReactNode; email?: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const visibleNav = isAdminEmail(email) ? [...nav, { href: "/dashboard/admin", label: "Admin", icon: "10" }] : nav;
 
   async function signOut() {
     const supabase = createSupabaseBrowserClient();
@@ -45,7 +47,7 @@ export function DashboardShell({ children, email }: { children: React.ReactNode;
         </div>
 
         <nav className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-          {nav.map((item) => {
+          {visibleNav.map((item) => {
             const active = pathname === item.href;
             return (
               <Link

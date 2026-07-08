@@ -92,7 +92,7 @@ export async function runChat(input: ChatInput): Promise<ChatResponse> {
 
     return {
       answer: finalFrom(results),
-      providerUsed: "openai, gemini, claude",
+      providerUsed: "openai, gemini",
       modelUsed: "multi-model",
       agentUsed: agent.name,
       mode: input.mode,
@@ -132,7 +132,7 @@ export async function runChat(input: ChatInput): Promise<ChatResponse> {
   }
 
   if (input.mode === "debate") {
-    const debateProviders: Provider[] = ["openai", "claude", "gemini"];
+    const debateProviders: Provider[] = ["openai", "gemini"];
     const draft = await safeCall(debateProviders[0], modelFor(debateProviders[0], input.model, agent), agent, input.message, input.apiKeys);
     const critique = await safeCall(
       debateProviders[1],
@@ -142,8 +142,8 @@ export async function runChat(input: ChatInput): Promise<ChatResponse> {
       input.apiKeys
     );
     const improved = await safeCall(
-      debateProviders[2],
-      modelFor(debateProviders[2], undefined, agent),
+      debateProviders[0],
+      modelFor(debateProviders[0], undefined, agent),
       agent,
       `Mejora la respuesta final usando la propuesta y la critica.\n\nPeticion: ${input.message}\n\nPropuesta:\n${draft.content}\n\nCritica:\n${critique.content}`,
       input.apiKeys
@@ -152,7 +152,7 @@ export async function runChat(input: ChatInput): Promise<ChatResponse> {
 
     return {
       answer: improved.content || finalFrom(results),
-      providerUsed: debateProviders.join(" -> "),
+      providerUsed: `${debateProviders[0]} -> ${debateProviders[1]} -> ${debateProviders[0]}`,
       modelUsed: "debate",
       agentUsed: agent.name,
       mode: input.mode,

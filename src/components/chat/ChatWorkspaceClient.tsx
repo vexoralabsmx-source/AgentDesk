@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { systemAgents } from "@/config/agents";
-import { defaultModels, type Provider } from "@/lib/ai/types";
+import { defaultModels, modelOptions, type Provider } from "@/lib/ai/types";
 import { Button } from "@/components/ui/Button";
 
 type ChatMode = "individual" | "compare" | "team" | "debate";
@@ -32,15 +32,9 @@ type ConversationItem = {
 const storageKey = "agentdesk.chat.history";
 const providerLabels: Record<Provider, string> = {
   openai: "OpenAI",
-  claude: "Claude",
   gemini: "Gemini"
 };
-const providerOptions: Provider[] = ["openai", "claude", "gemini"];
-const modelOptions: Record<Provider, string[]> = {
-  openai: ["gpt-4o-mini"],
-  claude: ["claude-3-5-haiku-latest"],
-  gemini: ["gemini-1.5-flash"]
-};
+const providerOptions: Provider[] = ["openai", "gemini"];
 const modeLabels: Record<ChatMode, string> = {
   individual: "Individual",
   compare: "Comparar",
@@ -168,7 +162,7 @@ export function ChatWorkspaceClient() {
           <p className="text-xs font-medium uppercase text-mint">Configuracion</p>
           <h2 className="mt-2 text-2xl text-[#fff8eb]">Chat Workspace</h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            Elige un agente, provider y modo. Las API keys viven solo en el backend.
+            Free usa tus keys del API Vault. Pro usa las keys del servidor sin exponerlas.
           </p>
         </div>
 
@@ -260,7 +254,7 @@ export function ChatWorkspaceClient() {
               {loading ? "Pensando..." : "Enviar a agentes"}
             </Button>
             <p className="text-sm text-slate-400">
-              {mode === "compare" ? "Comparar usa los 3 providers." : mode === "team" ? "Equipo coordina varios agentes." : "Respuesta directa con el agente seleccionado."}
+              {mode === "compare" ? "Comparar usa OpenAI y Gemini." : mode === "team" ? "Equipo coordina varios agentes." : "Respuesta directa con el agente seleccionado."}
             </p>
           </div>
 

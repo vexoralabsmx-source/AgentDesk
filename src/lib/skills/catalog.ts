@@ -41,6 +41,34 @@ export const skillCatalog: Skill[] = [
     category: "Deploy",
     description: "Crea checklist de pruebas, riesgos y pasos antes de publicar.",
     prompt: "Actua como QA engineer. Detecta rutas rotas, errores de build, accesibilidad, formularios, responsive y riesgos de deploy."
+  },
+  {
+    id: "growth-audit",
+    title: "Growth Audit",
+    category: "Growth",
+    description: "Analiza oferta, funnel, precios, objeciones y oportunidades de conversion.",
+    prompt: "Actua como growth strategist. Evalua oferta, publico, funnel, pricing, objeciones, confianza y acciones concretas para mejorar conversion."
+  },
+  {
+    id: "automation-map",
+    title: "Automation Map",
+    category: "Ops",
+    description: "Convierte un proceso en pasos, triggers, webhooks y herramientas.",
+    prompt: "Actua como arquitecto de automatizaciones. Disena flujos con triggers, acciones, datos necesarios, errores esperados y version MVP de bajo costo."
+  },
+  {
+    id: "data-brief",
+    title: "Data Brief",
+    category: "Data",
+    description: "Resume informacion en metricas, patrones, tablas e insights accionables.",
+    prompt: "Actua como analista de datos. Extrae patrones, metricas, anomalias, preguntas abiertas y recomendaciones claras."
+  },
+  {
+    id: "premium-prompting",
+    title: "Premium Prompting",
+    category: "AI",
+    description: "Mejora prompts para agentes, sistemas multi-modelo y tareas complejas.",
+    prompt: "Actua como prompt engineer senior. Refina instrucciones, contexto, criterios de exito, restricciones, formato de salida y pruebas de calidad."
   }
 ];
 

@@ -12,13 +12,16 @@ create table if not exists public.profiles (
 create table if not exists public.api_keys (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  provider text not null check (provider in ('openai', 'gemini', 'claude')),
+  provider text not null check (provider in ('openai', 'gemini')),
   encrypted_key text not null,
   key_hint text not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (user_id, provider)
 );
+
+alter table public.api_keys drop constraint if exists api_keys_provider_check;
+alter table public.api_keys add constraint api_keys_provider_check check (provider in ('openai', 'gemini'));
 
 create table if not exists public.agents (
   id uuid primary key default gen_random_uuid(),
@@ -77,6 +80,16 @@ create table if not exists public.task_logs (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.license_keys (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  plan text not null default 'pro' check (plan in ('pro')),
+  created_by uuid references auth.users(id) on delete set null,
+  used_by uuid references auth.users(id) on delete set null,
+  used_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
 create or replace function public.set_updated_at()
 returns trigger as $$
 begin
@@ -104,6 +117,7 @@ alter table public.user_skill_settings enable row level security;
 alter table public.tasks enable row level security;
 alter table public.task_outputs enable row level security;
 alter table public.task_logs enable row level security;
+alter table public.license_keys enable row level security;
 
 create policy "Users can read own profile" on public.profiles
 for select using (auth.uid() = id);
@@ -128,6 +142,10 @@ for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "Users own logs" on public.task_logs
 for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "Admin manages license keys" on public.license_keys
+for all using ((auth.jwt() ->> 'email') = 'vexoralabsmx@gmail.com')
+with check ((auth.jwt() ->> 'email') = 'vexoralabsmx@gmail.com');
 
 create or replace function public.handle_new_user()
 returns trigger as $$

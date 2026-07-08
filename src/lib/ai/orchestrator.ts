@@ -1,4 +1,3 @@
-import { runClaude } from "@/lib/ai/claudeAdapter";
 import { runGemini } from "@/lib/ai/geminiAdapter";
 import { runOpenAI } from "@/lib/ai/openaiAdapter";
 import { defaultModels, type Provider, type ProviderRequest, type ProviderResult, type TaskMode } from "@/lib/ai/types";
@@ -56,8 +55,7 @@ async function runProvider(provider: Provider, request: Omit<ProviderRequest, "a
   };
 
   if (provider === "openai") return runOpenAI(fullRequest);
-  if (provider === "gemini") return runGemini(fullRequest);
-  return runClaude(fullRequest);
+  return runGemini(fullRequest);
 }
 
 async function captureProvider(provider: Provider, request: Omit<ProviderRequest, "apiKey" | "model">, apiKeys: Partial<Record<Provider, string>>, agent?: AgentContext): Promise<ProviderResult> {
@@ -78,14 +76,14 @@ async function captureProvider(provider: Provider, request: Omit<ProviderRequest
 
 function routeProvider(prompt: string, apiKeys: Partial<Record<Provider, string>>, fallback?: Provider): Provider {
   const normalized = prompt.toLowerCase();
-  const available = (["openai", "gemini", "claude"] as Provider[]).filter((provider) => apiKeys[provider]);
+  const available = (["openai", "gemini"] as Provider[]).filter((provider) => apiKeys[provider]);
 
   if (!available.length) {
     throw new Error("No hay API keys disponibles para ejecutar la tarea");
   }
 
   if (normalized.includes("codigo") || normalized.includes("code") || normalized.includes("arquitectura")) {
-    return available.includes("claude") ? "claude" : available[0];
+    return available.includes("openai") ? "openai" : available[0];
   }
 
   if (normalized.includes("rapido") || normalized.includes("resumen") || normalized.length < 600) {
@@ -98,7 +96,7 @@ function routeProvider(prompt: string, apiKeys: Partial<Record<Provider, string>
 export async function orchestrateTask(input: OrchestratorInput) {
   const systemPrompt = buildSystemPrompt(input.agent, input.skillPrompts);
   const request = { systemPrompt, userPrompt: input.prompt };
-  const selectedProviders = input.providers?.length ? input.providers : (["openai", "gemini", "claude"] as Provider[]);
+  const selectedProviders = input.providers?.length ? input.providers : (["openai", "gemini"] as Provider[]);
 
   if (input.mode === "single") {
     const provider = input.provider ?? input.agent?.favoriteProvider ?? "openai";
@@ -123,9 +121,9 @@ export async function orchestrateTask(input: OrchestratorInput) {
     };
   }
 
-  const debateProviders = selectedProviders.slice(0, 3);
-  if (debateProviders.length < 3) {
-    throw new Error("El modo debate necesita tres providers seleccionados");
+  const debateProviders = selectedProviders.length >= 2 ? selectedProviders.slice(0, 2) : (["openai", "gemini"] as Provider[]);
+  if (debateProviders.some((provider) => !input.apiKeys[provider])) {
+    throw new Error("El modo debate necesita API keys para OpenAI y Gemini");
   }
 
   const draft = await captureProvider(debateProviders[0], request, input.apiKeys, input.agent);
@@ -139,7 +137,7 @@ export async function orchestrateTask(input: OrchestratorInput) {
     input.agent
   );
   const improved = await captureProvider(
-    debateProviders[2],
+    debateProviders[0],
     {
       systemPrompt,
       userPrompt: `Crea la mejor version final usando la tarea original, el borrador y la revision.\n\nTarea:\n${input.prompt}\n\nBorrador:\n${draft.content}\n\nRevision:\n${review.content}`
@@ -149,7 +147,7 @@ export async function orchestrateTask(input: OrchestratorInput) {
   );
 
   return {
-    selectedProvider: debateProviders.join(" -> "),
+    selectedProvider: `${debateProviders[0]} -> ${debateProviders[1]} -> ${debateProviders[0]}`,
     results: [draft, review, improved]
   };
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const capabilities = [
-  "Vault cifrado para OpenAI, Gemini y Claude",
+  "Vault cifrado para OpenAI y Gemini",
   "Agentes con prompt base y skills",
   "Single, parallel, debate y router",
   "Historial, outputs y logs"
@@ -35,7 +35,7 @@ export default function LandingPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#d9cdbc]">
             Una interfaz limpia para conectar tus API keys, crear agentes y trabajar con
-            OpenAI, Gemini y Claude desde un dashboard web sobrio, rapido y seguro.
+            OpenAI y Gemini desde un dashboard web sobrio, rapido y seguro.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link className="rounded-lg border border-mint/60 bg-mint px-6 py-3 text-center font-medium text-ink shadow-soft hover:bg-[#f0c58f]" href="/login">
@@ -64,7 +64,7 @@ export default function LandingPage() {
               <span className="rounded-full border border-solar/20 bg-solar/12 px-3 py-1 text-xs font-medium text-solar">Live</span>
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
-              {["OpenAI", "Gemini", "Claude"].map((provider, index) => (
+              {["OpenAI", "Gemini"].map((provider, index) => (
                 <div key={provider} className="rounded-lg border border-white/10 bg-white/5 p-4">
                   <div className="mb-4 flex items-center justify-between">
                     <span className="font-medium">{provider}</span>
@@ -90,7 +90,7 @@ export default function LandingPage() {
 
       <section id="arquitectura" className="border-t border-white/10 bg-black/10 px-4 py-16">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
-          {["Supabase Auth", "PostgreSQL + RLS", "API routes seguras", "Deploy Vercel/Netlify"].map((item) => (
+          {["Supabase Auth", "PostgreSQL + RLS", "API routes seguras", "Planes Free y Pro"].map((item) => (
             <div key={item} className="rounded-lg border border-white/10 bg-white/5 p-5">
               <h3 className="font-display text-xl text-[#fff8eb]">{item}</h3>
               <p className="mt-3 text-sm leading-6 text-[#b9ad9c]">Base simple, mantenible y lista para crecer sin mover secretos al cliente.</p>
